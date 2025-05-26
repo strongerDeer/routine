@@ -1,7 +1,10 @@
-// app/page.tsx
-
-import { ActivityTrackerPage } from "@/pages/ui/ActivityTrackerPage";
+import Link from "next/link";
 
 export default function Home() {
-  return <ActivityTrackerPage />;
+  return (
+    <div>
+      <Link href="/health">Health</Link>
+      <h2> Home</h2>
+    </div>
+  );
 }

@@ -48,51 +48,31 @@ function fillMissingDates(
   return result;
 }
 
-export function useActivityData(
-  viewType: "daily" | "weekly" | "monthly",
-  currentDate: Date
-) {
+export function useActivityData(currentDate: Date) {
   const [data, setData] = useState<ActivityData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     async function fetchData() {
+      console.log("useActivityData 데이터 가져오기 시작:", {
+        currentDate,
+      });
       setLoading(true);
       setError(null);
 
       try {
-        if (viewType === "daily") {
-          // 일간 뷰 - 항상 월요일부터 시작하도록 설정
-          const allData = await getAllActivityData();
+        const monthStart = startOfMonth(currentDate);
+        const monthEnd = endOfMonth(currentDate);
 
-          // 현재 날짜의 이번 주 월요일 구하기
-          const today = currentDate;
-          const mondayOfThisWeek = startOfWeek(today, { weekStartsOn: 1 });
+        const monthData = await getActivityDataByDateRange(
+          monthStart,
+          monthEnd
+        );
 
-          // 일주일 기간 (월요일~일요일)
-          const endOfThisWeek = addDays(mondayOfThisWeek, 6);
-
-          // 빈 날짜 포함하여 월요일부터 일요일까지의 데이터 준비
-          const weekData = fillMissingDates(
-            allData,
-            mondayOfThisWeek,
-            endOfThisWeek
-          );
-          setData(weekData);
-        } else if (viewType === "weekly") {
-          // 주간 뷰
-          const start = startOfWeek(currentDate, { weekStartsOn: 1 });
-          const end = endOfWeek(currentDate, { weekStartsOn: 1 });
-          const weekData = await getActivityDataByDateRange(start, end);
-          setData(fillMissingDates(weekData, start, end));
-        } else if (viewType === "monthly") {
-          // 월간 뷰
-          const start = startOfMonth(currentDate);
-          const end = endOfMonth(currentDate);
-          const monthData = await getActivityDataByDateRange(start, end);
-          setData(fillMissingDates(monthData, start, end));
-        }
+        // 빈 날짜 포함하여 월요일부터 일요일까지의 데이터 준비
+        const result = fillMissingDates(monthData, monthStart, monthEnd);
+        setData(result);
       } catch (err) {
         setError(
           err instanceof Error
@@ -105,7 +85,7 @@ export function useActivityData(
     }
 
     fetchData();
-  }, [viewType, currentDate]);
+  }, [currentDate]);
 
   return { data, loading, error };
 }

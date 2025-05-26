@@ -24,3 +24,41 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* globals.css에 추가 */
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) repeat(7, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.calendar-cell {
+  min-height: 120px;
+  transition: all 0.2s ease;
+}
+
+.calendar-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 1024px) {
+  .calendar-grid {
+    grid-template-columns: minmax(120px, 1fr) repeat(7, minmax(100px, 1fr));
+  }
+
+  .calendar-cell {
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 768px) {
+  .calendar-grid {
+    grid-template-columns: minmax(100px, 1fr) repeat(7, minmax(80px, 1fr));
+  }
+
+  .calendar-cell {
+    min-height: 80px;
+  }
+}
