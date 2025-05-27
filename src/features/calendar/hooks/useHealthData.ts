@@ -1,33 +1,21 @@
-// entities/activity/model/useActivityData.ts
-
 import { useState, useEffect } from "react";
-import {
-  format,
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  addDays,
-} from "date-fns";
-import { ActivityData } from "./types";
-import {
-  getAllActivityData,
-  getActivityDataByDateRange,
-} from "../api/firebase";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval } from "date-fns";
+
+import { getActivityDataByDateRange } from "../api/firebase";
+import { HealthData } from "../model/types";
 
 // 빈 날짜 채우기
 function fillMissingDates(
-  data: ActivityData[],
+  data: HealthData[],
   startDate: Date,
   endDate: Date
-): ActivityData[] {
-  const dateMap = new Map<string, ActivityData>();
+): HealthData[] {
+  const dateMap = new Map<string, HealthData>();
   data.forEach((item) => {
     dateMap.set(item.date, item);
   });
 
-  const result: ActivityData[] = [];
+  const result: HealthData[] = [];
   const range = eachDayOfInterval({ start: startDate, end: endDate });
 
   range.forEach((date) => {
@@ -37,10 +25,10 @@ function fillMissingDates(
     } else {
       result.push({
         date: dateStr,
-        activeEnergy: 0,
-        energy: 0,
-        steps: 0,
-        workout: 0,
+        activeEnergy: "0",
+        energy: "0",
+        steps: "0",
+        workout: "0",
       });
     }
   });
@@ -48,14 +36,14 @@ function fillMissingDates(
   return result;
 }
 
-export function useActivityData(currentDate: Date) {
-  const [data, setData] = useState<ActivityData[]>([]);
+export function useHealthData(currentDate: Date) {
+  const [data, setData] = useState<HealthData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     async function fetchData() {
-      console.log("useActivityData 데이터 가져오기 시작:", {
+      console.log("useHealthData 데이터 가져오기 시작:", {
         currentDate,
       });
       setLoading(true);

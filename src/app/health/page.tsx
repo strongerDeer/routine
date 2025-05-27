@@ -1,11 +1,9 @@
-import RoutineCalendar from "@/features/calendar/RoutineCalendar";
-import { ActivityDashboard } from "@/widgets/ActivityDashboard/ui/ActivityDashboard";
+import RoutineCalendar from "@/features/calendar/ui/RoutineCalendar";
 
 export default function HealthPage() {
   return (
     <>
       <RoutineCalendar />
-      <ActivityDashboard />;
     </>
   );
 }

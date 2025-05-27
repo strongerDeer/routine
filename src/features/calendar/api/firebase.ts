@@ -1,24 +1,10 @@
-// entities/activity/api/firebase.ts
-
 import { ref, get } from "firebase/database";
 import { database } from "@/shared/lib/firebase";
 import { format } from "date-fns";
-import { ActivityData } from "../model/types";
-
-interface HeathData {
-  activeEnergy: string;
-  energy: string;
-  steps: string;
-  workout: string;
-}
-
-// Firebase 데이터 구조 타입
-interface FirebaseData {
-  daily?: Record<string, HeathData>;
-}
+import { FirebaseHealthData, HealthData, HealthDataItem } from "../model/types";
 
 // 모든 활동 데이터를 가져오는 함수
-export async function getAllActivityData(): Promise<ActivityData[]> {
+export async function getAllActivityData(): Promise<HealthData[]> {
   try {
     console.log("getAllActivityData 함수 시작");
 
@@ -26,7 +12,7 @@ export async function getAllActivityData(): Promise<ActivityData[]> {
     const snapshot = await get(activityRef);
 
     if (snapshot.exists()) {
-      const data = snapshot.val() as FirebaseData;
+      const data = snapshot.val() as FirebaseHealthData;
       console.log("Firebase에서 가져온 전체 데이터:", data);
 
       // daily 키가 있는 경우
@@ -34,10 +20,10 @@ export async function getAllActivityData(): Promise<ActivityData[]> {
         return Object.entries(data.daily)
           .map(([date, values]) => ({
             date,
-            activeEnergy: parseInt(values.activeEnergy || "0"),
-            energy: parseInt(values.energy || "0"),
-            steps: parseInt(values.steps || "0"),
-            workout: parseInt(values.workout || "0"),
+            activeEnergy: values.activeEnergy || "0",
+            energy: values.energy || "0",
+            steps: values.steps || "0",
+            workout: values.workout || "0",
           }))
           .sort((a, b) => a.date.localeCompare(b.date));
       }
@@ -53,12 +39,12 @@ export async function getAllActivityData(): Promise<ActivityData[]> {
             typeof value === "object"
           );
         })
-        .map(([date, values]: [string, any]) => ({
+        .map(([date, values]) => ({
           date,
-          activeEnergy: parseInt(values.activeEnergy || "0"),
-          energy: parseInt(values.energy || "0"),
-          steps: parseInt(values.steps || "0"),
-          workout: parseInt(values.workout || "0"),
+          activeEnergy: (values as HealthDataItem).activeEnergy || "0",
+          energy: (values as HealthDataItem).energy || "0",
+          steps: (values as HealthDataItem).steps || "0",
+          workout: (values as HealthDataItem).workout || "0",
         }))
         .sort((a, b) => a.date.localeCompare(b.date));
     }
@@ -74,7 +60,7 @@ export async function getAllActivityData(): Promise<ActivityData[]> {
 export async function getActivityDataByDateRange(
   startDate: Date,
   endDate: Date
-): Promise<ActivityData[]> {
+): Promise<HealthData[]> {
   try {
     console.log("getActivityDataByDateRange 함수 시작");
     const startDateStr = format(startDate, "yyyy-MM-dd");
