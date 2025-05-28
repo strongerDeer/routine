@@ -1,9 +1,12 @@
-import RoutineCalendar from "@/features/calendar/ui/RoutineCalendar";
+import CalendarUI from "@/features/calendar/ui/CalendarUI";
+import SelectedDate from "@/features/calendar/ui/SelectedDate";
 
 export default function HealthPage() {
   return (
-    <>
-      <RoutineCalendar />
-    </>
+    <div className="flex gap-4">
+      <CalendarUI />
+
+      <SelectedDate />
+    </div>
   );
 }

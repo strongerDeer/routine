@@ -36,7 +36,7 @@ function fillMissingDates(
   return result;
 }
 
-export function useHealthData(currentDate: Date) {
+export function useHealthData(currentDate: Date, oneDay: boolean = false) {
   const [data, setData] = useState<HealthData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
@@ -49,17 +49,25 @@ export function useHealthData(currentDate: Date) {
       setLoading(true);
       setError(null);
 
+      let result;
       try {
-        const monthStart = startOfMonth(currentDate);
-        const monthEnd = endOfMonth(currentDate);
+        if (oneDay) {
+          const dayData = await getActivityDataByDateRange(
+            currentDate,
+            currentDate
+          );
+          result = fillMissingDates(dayData, currentDate, currentDate);
+        } else {
+          const monthStart = startOfMonth(currentDate);
+          const monthEnd = endOfMonth(currentDate);
 
-        const monthData = await getActivityDataByDateRange(
-          monthStart,
-          monthEnd
-        );
+          const monthData = await getActivityDataByDateRange(
+            monthStart,
+            monthEnd
+          );
 
-        // 빈 날짜 포함하여 월요일부터 일요일까지의 데이터 준비
-        const result = fillMissingDates(monthData, monthStart, monthEnd);
+          result = fillMissingDates(monthData, monthStart, monthEnd);
+        }
         setData(result);
       } catch (err) {
         setError(
